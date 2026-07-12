@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+:root {
+  --background: #fdf9f6;
+  --foreground: #2b1020;
+  /* Pension Saathi palette (matches the pitch deck) */
+  --aubergine: #3b1429;
+  --aubergine-light: #5a2440;
+  --gold: #c8851c;
+  --gold-light: #e8a94a;
+  --soft-pink: #f7ebed;
+  --wa-green: #075e54;
+  --wa-bubble: #dcf8c6;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-aubergine: var(--aubergine);
+  --color-aubergine-light: var(--aubergine-light);
+  --color-gold: var(--gold);
+  --color-gold-light: var(--gold-light);
+  --color-soft-pink: var(--soft-pink);
+  --color-wa-green: var(--wa-green);
+  --color-wa-bubble: var(--wa-bubble);
+  --font-sans: var(--font-geist-sans);
+  --font-serif: var(--font-playfair);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+/* Dashboard feed entry animation */
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-slide-in {
+  animation: slide-in 0.35s ease-out;
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+.animate-pulse-dot {
+  animation: pulse-dot 1.4s ease-in-out infinite;
+}

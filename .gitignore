@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Environment & secrets
+.env
+.env.local
+.env*.local
+secrets.txt
+
+# Build output
+.next/
+out/
+dist/
+build/
+
+# Databases & runtime data
+backend/data/pension_saathi.db
+backend/data/chroma/
+backend/data/uploads/
+
+# Editor / OS
+.DS_Store
+.vscode/
+*.log
