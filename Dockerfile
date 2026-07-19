@@ -1,6 +1,7 @@
-FROM python:3.11-slim
+FROM python:3.11-bullseye
 
-# Install system dependencies including Tesseract OCR for server-side document OCR
+# Install Tesseract OCR + language packs FIRST (before Python packages)
+# bullseye includes apt, gcc, build-essential needed for OCR setup
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
     tesseract-ocr \
@@ -8,18 +9,20 @@ RUN apt-get update \
     tesseract-ocr-tel \
     tesseract-ocr-tam \
     && rm -rf /var/lib/apt/lists/* \
-    && which tesseract
+    && echo "Tesseract installed at:" \
+    && which tesseract \
+    && tesseract --version
 
 WORKDIR /app
 
-# Copy backend code
+# Copy and install Python dependencies
 COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY backend/ .
 
-# Verify Tesseract is installed and accessible
-RUN tesseract --version
+# Final verification before startup
+RUN echo "OCR check:" && tesseract --version && echo "Setup complete!"
 
-# Run the app
+# Run the FastAPI app on $PORT (Render sets this)
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
