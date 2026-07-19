@@ -20,7 +20,8 @@ INDIAN_STATES = [
     "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya",
     "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim",
     "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand",
-    "West Bengal", "Delhi",
+    "West Bengal", "Delhi", "Jammu and Kashmir", "Ladakh", "Puducherry",
+    "Chandigarh", "Andaman and Nicobar", "Lakshadweep",
 ]
 
 LOCAL_STATE_NAMES = {
@@ -109,6 +110,29 @@ DAUGHTER_REASK = {
 
 # Fallback address when the name is missing ("Sister" instead of a blank).
 GAP_FALLBACK_NAME = {"hi": "बहन", "te": "అక్కా", "en": "Sister"}
+
+# ---- Answer validation (one gentle re-ask, then accept) --------------------
+# Garbage like "kjkn, kjn" used to be stored as a state and flow straight into
+# discovery. Now steps with a verifiable answer (state, age, income) re-ask
+# once when nothing parseable was found; a second unparseable answer is
+# accepted as-is so nobody gets stuck in a loop.
+REASK = {
+    1: {
+        "hi": "माफ़ कीजिए, मैं वह राज्य पहचान नहीं पाई। कृपया अपना राज्य बताएं — जैसे बिहार, उत्तर प्रदेश, तेलंगाना…",
+        "en": "Sorry, I couldn't recognise that state. Please tell me your state — for example Bihar, Uttar Pradesh, Telangana…",
+        "te": "క్షమించండి, ఆ రాష్ట్రం నాకు అర్థం కాలేదు. దయచేసి మీ రాష్ట్రం చెప్పండి — ఉదాహరణకు తెలంగాణ, ఆంధ్రప్రదేశ్, బీహార్…",
+    },
+    2: {
+        "hi": "कृपया अंकों में बताएं — आपकी उम्र कितनी है और कितने बच्चे हैं? (जैसे: 40 साल, 2 बच्चे)",
+        "en": "Please tell me in numbers — your age and how many children you have. (For example: 40 years, 2 children)",
+        "te": "దయచేసి సంఖ్యలలో చెప్పండి — మీ వయస్సు ఎంత, ఎంతమంది పిల్లలు? (ఉదా: 40 ఏళ్ళు, 2 పిల్లలు)",
+    },
+    4: {
+        "hi": "कृपया अंकों में बताएं — महीने की कमाई लगभग कितनी है? (जैसे: 3000)",
+        "en": "Please tell me a number — roughly how much do you earn per month? (For example: 3000)",
+        "te": "దయచేసి సంఖ్యలో చెప్పండి — నెలకు సుమారు ఎంత సంపాదిస్తారు? (ఉదా: 3000)",
+    },
+}
 
 _NO_WORDS = {"no", "nahi", "nahin", "नहीं", "नही", "లేదు", "కాదు", "ledu", "kadu", "not"}
 _YES_WORDS = {"yes", "haan", "han", "ha", "हाँ", "हा", "जी", "అవును", "ఉంది", "avunu", "undi"}
@@ -220,32 +244,40 @@ def _llm_extract(step: int, message: str) -> dict | None:
         return None
 
 
-def _parse_answer(step: int, message: str, widow: Widow) -> None:
+def _parse_answer(step: int, message: str, widow: Widow) -> bool:
+    """Store what was understood; return False when nothing verifiable was
+    found (caller may re-ask). Name and occupation are free text — always True."""
     if step == 0:
         widow.name = _extract_name(message)
     elif step == 1:
         state, district = _extract_state_district(message)
         if not state:
             llm = _llm_extract(1, message) or {}
-            state = llm.get("state")
+            llm_state = (llm.get("state") or "").strip().title()
+            state = llm_state if llm_state in INDIAN_STATES else None
             district = district or llm.get("district")
         widow.state = state or message.strip().title()
         widow.district = district
+        return state is not None
     elif step == 2:
+        age = children = None
         numbers = _extract_numbers(message)
         if numbers:
-            widow.age = numbers[0]
+            age = numbers[0]
             if len(numbers) > 1:
                 # "42, 2 children" → count 2. But "45, sons 14 and 10" lists
                 # AGES, not a count — a count over 12 is implausible, so treat
                 # the remaining numbers as one age each.
-                widow.children_count = numbers[1] if numbers[1] <= 12 else len(numbers) - 1
+                children = numbers[1] if numbers[1] <= 12 else len(numbers) - 1
             else:
-                widow.children_count = 0
-        else:
+                children = 0
+        if age is None or not 12 <= age <= 110:
             llm = _llm_extract(2, message) or {}
-            widow.age = llm.get("age")
-            widow.children_count = llm.get("children_count")
+            age = llm.get("age") if llm.get("age") is not None else age
+            children = llm.get("children_count") if llm.get("children_count") is not None else children
+        widow.age = age
+        widow.children_count = children
+        return age is not None and 12 <= int(age) <= 110
     elif step == 3:
         widow.husband_occupation = _extract_occupation(message)
     elif step == 4:
@@ -257,6 +289,8 @@ def _parse_answer(step: int, message: str, widow: Widow) -> None:
             # None (unknown) is better than a false 0 — discovery treats
             # unknown income as "verify", not as zero income.
             widow.monthly_income = llm.get("monthly_income")
+        return widow.monthly_income is not None
+    return True
 
 
 def handle_message(widow_id: str, message: str, preferred_language: str | None = None) -> dict:
@@ -326,7 +360,23 @@ def handle_message(widow_id: str, message: str, preferred_language: str | None =
         if greeting_only:
             reply = QUESTIONS[lang][0]
         else:
-            _parse_answer(step, message, widow)
+            valid = _parse_answer(step, message, widow)
+            retry_key = f"retry_{step}"
+            if not valid and step in REASK and widow.pending_question != retry_key:
+                # Nothing verifiable in the answer — ask once more instead of
+                # storing garbage and discovering schemes for state "Kjkn".
+                widow.pending_question = retry_key
+                reply = REASK[step][lang]
+                db.add(Conversation(widow_id=widow_id, role="agent", content=reply))
+                db.commit()
+                log_action(
+                    widow_id, "voice",
+                    f"Couldn't understand the answer for step {step + 1}/5 — "
+                    "asked again instead of guessing",
+                )
+                return {"agent_reply": reply, "done": False, "profile": None}
+            if widow.pending_question == retry_key:
+                widow.pending_question = None
             widow.onboarding_step = step + 1
             if widow.onboarding_step >= 5:
                 done = True

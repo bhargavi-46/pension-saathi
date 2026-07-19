@@ -17,12 +17,85 @@ import os
 import re
 import time
 
-from db import Document, SessionLocal, log_action
+from db import Document, SessionLocal, Widow, log_action
 from services import crypto
 from services.gemini import gemini_service
 from services.ocr import ocr_service
 
 UPLOAD_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "uploads")
+
+# ── Wrong-document detection ────────────────────────────────────────────────
+# An Aadhaar uploaded as a "death certificate" used to sail through: the LLM
+# would extract the Aadhaar holder's name as the deceased and blank dates, and
+# discovery ran on garbage. Now every extraction is validated against the
+# fields that document type MUST have, plus script hints from the OCR text.
+_FIELD_EMPTY = {"", "-", "—", "null", "none", "unknown", "n/a", "na"}
+
+_DEATH_HINTS = re.compile(
+    r"(?i)death|died|deceased|expired|मृत्यु|मृतक|निधन|మరణ|చనిపో|இறப்பு|மரண"
+)
+_AADHAAR_HINTS = re.compile(
+    r"(?i)aadhaar|aadhar|uidai|unique identification|enrol|आधार|ఆధార్|ஆதார்"
+)
+
+DOC_LABEL = {
+    "death_certificate": {"en": "death certificate", "hi": "मृत्यु प्रमाण पत्र", "te": "మరణ ధృవీకరణ పత్రం"},
+    "aadhaar": {"en": "Aadhaar card", "hi": "आधार कार्ड", "te": "ఆధార్ కార్డ్"},
+    "bank_passbook": {"en": "bank passbook", "hi": "बैंक पासबुक", "te": "బ్యాంక్ పాస్‌బుక్"},
+    "ration_card": {"en": "ration card", "hi": "राशन कार्ड", "te": "రేషన్ కార్డ్"},
+}
+
+WRONG_DOC_MSG = {
+    "en": "This doesn't look like a {expected}{seen}. Please tap 📎 and send a clear photo of the {expected}.",
+    "hi": "यह {expected} नहीं लग रहा{seen}। कृपया 📎 दबाकर {expected} की साफ़ फोटो भेजें।",
+    "te": "ఇది {expected} లాగా కనిపించడం లేదు{seen}. దయచేసి 📎 నొక్కి {expected} స్పష్టమైన ఫోటో పంపండి.",
+}
+
+LOOKS_AADHAAR = {
+    "en": " — it looks like an Aadhaar card",
+    "hi": " — यह आधार कार्ड लग रहा है",
+    "te": " — ఇది ఆధార్ కార్డ్ లాగా ఉంది",
+}
+
+
+def _has(extracted: dict, key: str, needs_digit: bool = False) -> bool:
+    v = extracted.get(key)
+    if v is None or str(v).strip().lower() in _FIELD_EMPTY:
+        return False
+    return bool(re.search(r"\d", str(v))) if needs_digit else True
+
+
+def _validate_extraction(doc_type: str, extracted: dict, ocr_text: str, lang: str) -> None:
+    """Raise ValueError (→ 400 with a user-facing message) when the upload
+    doesn't look like the document type it was sent as."""
+    looks_aadhaar = False
+    if doc_type == "death_certificate":
+        looks_aadhaar = bool(
+            ocr_text and _AADHAAR_HINTS.search(ocr_text) and not _DEATH_HINTS.search(ocr_text)
+        )
+        ok = (
+            not looks_aadhaar
+            and _has(extracted, "deceased_name")
+            and _has(extracted, "date_of_death", needs_digit=True)
+        )
+    elif doc_type == "aadhaar":
+        ok = _has(extracted, "name") or _has(extracted, "aadhaar_number")
+    elif doc_type == "bank_passbook":
+        ok = (
+            _has(extracted, "account_holder_name")
+            or _has(extracted, "account_number")
+            or _has(extracted, "ifsc")
+        )
+    else:  # ration_card
+        ok = _has(extracted, "card_holder_name") or _has(extracted, "card_number")
+    if not ok:
+        lang = lang if lang in WRONG_DOC_MSG else "en"
+        raise ValueError(
+            WRONG_DOC_MSG[lang].format(
+                expected=DOC_LABEL[doc_type][lang],
+                seen=LOOKS_AADHAAR[lang] if looks_aadhaar else "",
+            )
+        )
 
 # Prompts used for LLM extraction. The vision variant still exists because it
 # powers the OCR-unavailable fallback path; the text variant is what runs on
@@ -115,6 +188,25 @@ def process_document(widow_id: str, doc_type: str, file_bytes: bytes, filename: 
         raw = gemini_service.vision(file_bytes, VISION_PROMPTS[doc_type])
 
     extracted = _parse_json(raw)
+
+    # ── 2.5 Wrong-document gate ────────────────────────────────────────────
+    # Reject before anything is saved or discovery runs: an Aadhaar sent as a
+    # death certificate must produce a "please send the right document" reply,
+    # not a fabricated "your husband passed away on —".
+    with SessionLocal() as db:
+        widow = db.get(Widow, widow_id)
+        lang = ((widow.language if widow else None) or "en-IN").split("-")[0]
+    try:
+        _validate_extraction(doc_type, extracted, ocr_text, lang)
+    except ValueError:
+        log_action(
+            widow_id, "document",
+            f"⚠ Rejected {doc_type.replace('_', ' ')} upload — the required fields "
+            "are missing or the image looks like a different document. "
+            "Asked her to send the correct one.",
+            {"extracted": extracted},
+        )
+        raise
 
     # ── 3. Persist ─────────────────────────────────────────────────────────
     widow_dir = os.path.join(UPLOAD_DIR, widow_id)
