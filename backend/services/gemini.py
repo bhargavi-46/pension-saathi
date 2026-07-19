@@ -231,6 +231,11 @@ class GeminiService:
     def _mock_chat(self, prompt: str, system: str | None) -> str:
         """Deterministic canned replies keyed on what the prompt asks for."""
         lowered = (prompt + " " + (system or "")).lower()
+        # Document-extraction prompts (OCR-text path) reuse the same canned
+        # JSON as the vision mock, so the offline demo can read documents too.
+        if "deceased_name" in lowered or "aadhaar_number" in lowered or \
+           "account_holder_name" in lowered or "card_holder_name" in lowered:
+            return self._mock_vision(prompt)
         if "json" in lowered and "eligible" in lowered:
             return json.dumps(
                 {
