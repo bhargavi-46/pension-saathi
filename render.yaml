@@ -3,12 +3,9 @@ services:
     name: pension-saathi-api
     runtime: python
     rootDir: backend
-    # Install tesseract (server-side OCR) + Hindi/Telugu/Tamil language packs
-    packages:
-      - tesseract-ocr
-      - tesseract-ocr-hin
-      - tesseract-ocr-tel
-      - tesseract-ocr-tam
+    # On Render free tier, system packages can't be installed due to sandbox limits.
+    # Tesseract is optional — if unavailable, OCR gracefully falls back to LLM vision.
+    # For production: upgrade to Standard tier or use Docker.
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
     plan: free
