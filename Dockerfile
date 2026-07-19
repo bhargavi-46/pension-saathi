@@ -1,28 +1,22 @@
-FROM debian:bullseye-slim
+FROM python:3.11-slim
 
-# Install Python 3.11 + Tesseract + language packs in ONE layer
-RUN apt-get update -y && apt-get install -y --no-install-recommends \
-    python3.11 \
-    python3.11-venv \
-    python3.11-dev \
-    python3-pip \
+# Tesseract OCR + Hindi/Telugu/Tamil language packs — server-side OCR so
+# document images never leave this box.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
     tesseract-ocr \
     tesseract-ocr-hin \
     tesseract-ocr-tel \
     tesseract-ocr-tam \
-    ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
-
-# Verify Tesseract from the start
-RUN tesseract --version && which tesseract
+    && rm -rf /var/lib/apt/lists/* \
+    && tesseract --version
 
 WORKDIR /app
 
-# Copy and install Python dependencies
 COPY backend/requirements.txt .
-RUN pip3 install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY backend/ .
 
-# Run FastAPI
-CMD ["python3.11", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Shell form so Render's $PORT is expanded at runtime (exec form wouldn't).
+CMD uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}

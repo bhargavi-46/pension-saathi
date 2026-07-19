@@ -3,7 +3,6 @@ services:
     name: pension-saathi-api
     runtime: docker
     dockerfilePath: ./Dockerfile
-    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
     plan: free
     envVars:
       # Gemini (primary AI reasoning)
