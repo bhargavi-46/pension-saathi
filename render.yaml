@@ -4,8 +4,12 @@ services:
     runtime: python
     rootDir: backend
     # Install tesseract (server-side OCR) + Hindi/Telugu/Tamil language packs
-    # BEFORE pip install, so pytesseract can find the binary at boot.
-    buildCommand: apt-get update && apt-get install -y --no-install-recommends tesseract-ocr tesseract-ocr-hin tesseract-ocr-tel tesseract-ocr-tam && pip install -r requirements.txt
+    packages:
+      - tesseract-ocr
+      - tesseract-ocr-hin
+      - tesseract-ocr-tel
+      - tesseract-ocr-tam
+    buildCommand: pip install -r requirements.txt
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
     plan: free
     envVars:
