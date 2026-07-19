@@ -104,8 +104,21 @@ export function useVoice(initialLang: VoiceLang = "hi-IN") {
     const task = queue.shift()!;
     if (task.kind === "browser") {
       currentUtteranceRef.current = task.utterance;
-      task.utterance.onend = () => processSpeechQueue();
-      task.utterance.onerror = () => processSpeechQueue();
+      // Chrome bug: speechSynthesis silently pauses ~15s into a long
+      // utterance and never resumes — the classic "auto-speak sometimes
+      // stops working". A periodic pause/resume nudge keeps it alive.
+      const keepAlive = setInterval(() => {
+        if (window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
+          window.speechSynthesis.pause();
+          window.speechSynthesis.resume();
+        }
+      }, 10000);
+      const done = () => {
+        clearInterval(keepAlive);
+        processSpeechQueue();
+      };
+      task.utterance.onend = done;
+      task.utterance.onerror = done;
       window.speechSynthesis.speak(task.utterance);
     } else {
       // Server TTS: audio was pre-fetched when speak() was called, so by
@@ -150,25 +163,31 @@ export function useVoice(initialLang: VoiceLang = "hi-IN") {
     (text: string, effLang: VoiceLang): Promise<HTMLAudioElement | null> => {
       const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
       const shortLang = effLang.split("-")[0]; // 'te-IN' → 'te'
-      return fetch(`${apiBase}/voice/tts`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text, lang: shortLang }),
-      })
-        .then((r) => (r.ok ? r.blob() : null))
-        .then((blob) => {
-          if (!blob) return null;
-          const audio = new Audio(URL.createObjectURL(blob));
-          audio.preload = "auto";
-          return new Promise<HTMLAudioElement>((resolve) => {
-            if (audio.readyState >= 3) resolve(audio);
-            else {
-              audio.oncanplay = () => resolve(audio);
-              setTimeout(() => resolve(audio), 500); // safety net
-            }
-          });
+      const attempt = (): Promise<HTMLAudioElement | null> =>
+        fetch(`${apiBase}/voice/tts`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text, lang: shortLang }),
         })
-        .catch(() => null);
+          .then((r) => (r.ok ? r.blob() : null))
+          .then((blob) => {
+            if (!blob) return null;
+            const audio = new Audio(URL.createObjectURL(blob));
+            audio.preload = "auto";
+            return new Promise<HTMLAudioElement>((resolve) => {
+              if (audio.readyState >= 3) resolve(audio);
+              else {
+                audio.oncanplay = () => resolve(audio);
+                setTimeout(() => resolve(audio), 500); // safety net
+              }
+            });
+          })
+          .catch(() => null);
+      // One retry after a short wait: covers the free-tier backend waking up
+      // from sleep mid-conversation (fetch fails → message went silent).
+      return attempt().then((audio) =>
+        audio ? audio : new Promise((r) => setTimeout(r, 1500)).then(attempt)
+      );
     },
     []
   );

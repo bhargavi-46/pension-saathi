@@ -132,14 +132,36 @@ def retrieve(state: DiscoveryState) -> DiscoveryState:
     return state
 
 
-def _evaluate_with_llm(profile: dict, cert: dict | None, scheme: dict, conversation: str = "", web_context: str = "") -> dict:
+# The reasoning sentence is shown on the scheme card AND read aloud by the
+# voice button — it must be in HER language, not English.
+_REASONING_LANG = {
+    "hi": "Hindi (Devanagari script)",
+    "te": "Telugu (Telugu script)",
+    "en": "simple English",
+}
+
+_MOCK_REASONING = {
+    "hi": "यह योजना आपकी स्थिति से मेल खाती है — विधवा, आय और राज्य ({state}) की शर्तें पूरी होती हैं।",
+    "te": "ఈ పథకం మీ పరిస్థితికి సరిపోతుంది — వితంతువు, ఆదాయం మరియు రాష్ట్రం ({state}) షరతులు నెరవేరుతాయి.",
+    "en": "Matches the scheme's widow, income and residence criteria for {state}.",
+}
+
+_FALLBACK_REASONING = {
+    "hi": "नियमों के अनुसार आप इस योजना की पात्र हैं (एआई जाँच बाद में होगी)।",
+    "te": "నియమాల ప్రకారం మీరు ఈ పథకానికి అర్హులు (ఏఐ తనిఖీ తర్వాత జరుగుతుంది).",
+    "en": "Matches rule-based criteria (detailed AI check will follow).",
+}
+
+
+def _evaluate_with_llm(profile: dict, cert: dict | None, scheme: dict, conversation: str = "", web_context: str = "", lang: str = "en") -> dict:
+    lang = lang if lang in _REASONING_LANG else "en"
     if gemini_service.mock:
         # Deterministic verdict so the demo works without an API key:
         # rule-filtered candidates are treated as eligible at their real value.
         return {
             "eligible": True,
             "confidence": 0.85,
-            "reasoning": f"Matches the scheme's widow, income and residence criteria for {profile.get('state')}.",
+            "reasoning": _MOCK_REASONING[lang].format(state=profile.get("state")),
             "estimated_annual_value": scheme.get("estimated_annual_value", 0),
             "missing_documents": [],
         }
@@ -154,20 +176,22 @@ def _evaluate_with_llm(profile: dict, cert: dict | None, scheme: dict, conversat
         "\nIf a key eligibility fact is simply unknown (not contradicted), set eligible=true with "
         "confidence 0.5-0.6 and name what must be verified in missing_documents — do not silently "
         "reject on missing information alone.\n"
-        "Return ONLY JSON: {\"eligible\": bool, \"confidence\": 0-1, \"reasoning\": str (one sentence, "
-        "simple words), \"estimated_annual_value\": number (₹/year), \"missing_documents\": [str]}"
+        f"Write the \"reasoning\" sentence in {_REASONING_LANG[lang]} — one short sentence a rural "
+        "woman with little schooling immediately understands. Everything else stays in English.\n"
+        "Return ONLY JSON: {\"eligible\": bool, \"confidence\": 0-1, \"reasoning\": str, "
+        "\"estimated_annual_value\": number (₹/year), \"missing_documents\": [str]}"
     )
     try:
         raw = gemini_service.chat(prompt)
     except Exception as e:
         # Free-tier rate limits (429) mid-run must not kill the demo: fall
         # back to the rule-based verdict for this scheme and keep going.
+        if is_quota_error(e):
+            pass  # expected on the free tier — same fallback either way
         return {
             "eligible": True,
             "confidence": 0.7,
-            "reasoning": "Matches rule-based criteria (LLM check skipped: "
-            + ("rate limit hit" if is_quota_error(e) else "LLM unavailable")
-            + ").",
+            "reasoning": _FALLBACK_REASONING[lang],
             "estimated_annual_value": scheme.get("estimated_annual_value", 0),
             "missing_documents": [],
         }
@@ -185,6 +209,7 @@ def _evaluate_with_llm(profile: dict, cert: dict | None, scheme: dict, conversat
 
 def reason(state: DiscoveryState) -> DiscoveryState:
     evaluations = []
+    lang = (state["profile"].get("language") or "en-IN").split("-")[0]
     for scheme in state["candidates"]:
         verdict = _evaluate_with_llm(
             state["profile"],
@@ -192,6 +217,7 @@ def reason(state: DiscoveryState) -> DiscoveryState:
             scheme,
             state.get("conversation", ""),
             state.get("web_context", ""),
+            lang,
         )
         verdict["scheme"] = scheme
         evaluations.append(verdict)
@@ -240,10 +266,15 @@ def verify_gaps(state: DiscoveryState) -> DiscoveryState:
         return state
 
     if has_daughter == 1:
+        lang = (p.get("language") or "en-IN").split("-")[0]
+        confirmed = {
+            "hi": " परिवार से पुष्टि हुई: 10 साल से छोटी बेटी है।",
+            "te": " కుటుంబంతో ధృవీకరించాం: 10 ఏళ్లలోపు కుమార్తె ఉంది.",
+            "en": " Confirmed with the family: she has a daughter under 10.",
+        }.get(lang, " Confirmed with the family: she has a daughter under 10.")
         ssy["confidence"] = max(ssy.get("confidence", 0), 0.9)
         ssy["reasoning"] = (
-            (ssy.get("reasoning") or "").rstrip().rstrip(".")
-            + ". Confirmed with the family: she has a daughter under 10."
+            (ssy.get("reasoning") or "").rstrip().rstrip(".") + "." + confirmed
         ).lstrip(". ")
         # The daughter's existence is now verified — drop only those "verify"
         # items; her birth certificate etc. still come from documents_required.

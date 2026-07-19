@@ -621,8 +621,12 @@ export default function ChatPage() {
                           // An explicit tap jumps the queue — stop whatever is
                           // playing and speak this card immediately.
                           voice.stopSpeaking();
+                          // Speak the name + her-language reasoning only. The
+                          // notes are long English office/document lists —
+                          // better read than heard, and they'd force the whole
+                          // utterance into an English voice.
                           voice.speak(
-                            `${t(voice.lang).listenIntro} ${schemeDisplayName(c.scheme_name, voice.lang)}. ${c.reasoning ?? ""} ${c.notes ?? ""}`,
+                            `${t(voice.lang).listenIntro} ${schemeDisplayName(c.scheme_name, voice.lang)}. ${c.reasoning ?? ""}`,
                             true
                           );
                         }}
