@@ -8,3 +8,13 @@ langgraph>=0.2
 langchain-google-genai>=2.0
 pydantic>=2.7
 sqlalchemy>=2.0
+requests>=2.31
+# Server-side OCR (privacy: extract text on our box, never ship the image).
+# Needs the tesseract binary + language packs installed at the OS level:
+#   apt-get install -y tesseract-ocr tesseract-ocr-hin tesseract-ocr-tel
+# If tesseract isn't installed at runtime, document_agent falls back to
+# LLM vision so the app keeps working.
+pytesseract>=0.3.10
+Pillow>=10.0
+# AES-GCM for encrypting extracted document text at rest.
+cryptography>=42.0

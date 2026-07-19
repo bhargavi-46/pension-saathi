@@ -1,0 +1,356 @@
+[
+  {
+    "id": "ignwps",
+    "name": "इंदिरा गांधी राष्ट्रीय विधवा पेंशन योजना / Indira Gandhi National Widow Pension Scheme (IGNWPS)",
+    "authority": "Ministry of Rural Development (NSAP)",
+    "state": "central",
+    "benefit_amount": "₹300/month (age 40–79), ₹500/month (80+); most states add a top-up",
+    "eligibility": [
+      "Widow aged 40–79 years",
+      "Belongs to a Below Poverty Line (BPL) household",
+      "Not remarried"
+    ],
+    "documents_required": ["Death certificate of husband", "BPL card", "Aadhaar card", "Bank passbook", "Age proof"],
+    "where_to_apply": "NSAP portal (nsap.nic.in) or UMANG app, via Gram Panchayat / Block Development Office",
+    "estimated_annual_value": 3600,
+    "application_complexity": "medium",
+    "common_rejection_reasons": ["Name mismatch between Aadhaar and death certificate", "Not on the BPL list", "Age proof missing"],
+    "source_url": "https://nsap.nic.in"
+  },
+  {
+    "id": "nfbs",
+    "name": "राष्ट्रीय परिवार लाभ योजना / National Family Benefit Scheme (NFBS)",
+    "authority": "Ministry of Rural Development (NSAP)",
+    "state": "central",
+    "benefit_amount": "₹20,000 one-time lump sum",
+    "eligibility": [
+      "Death of the primary breadwinner of a BPL family",
+      "Deceased was aged 18–59 at the time of death",
+      "Application within the state's prescribed window (usually 1–2 years of death)"
+    ],
+    "documents_required": ["Death certificate", "BPL card", "Aadhaar card of applicant", "Bank passbook", "Proof that deceased was breadwinner"],
+    "where_to_apply": "NSAP portal (nsap.nic.in) via Block Development Office / Tehsil",
+    "estimated_annual_value": 20000,
+    "application_complexity": "medium",
+    "common_rejection_reasons": ["Applied after the deadline", "Deceased was over 59", "Family not classified BPL"],
+    "source_url": "https://nsap.nic.in"
+  },
+  {
+    "id": "pmjay",
+    "name": "आयुष्मान भारत प्रधानमंत्री जन आरोग्य योजना / Ayushman Bharat PM-JAY",
+    "authority": "National Health Authority, Ministry of Health & Family Welfare",
+    "state": "central",
+    "benefit_amount": "₹5,00,000/year family health cover (cashless hospitalisation)",
+    "eligibility": [
+      "Family listed in SECC-2011 deprivation categories (widow-headed households are a priority category D5)",
+      "No cap on family size or age"
+    ],
+    "documents_required": ["Aadhaar card", "Ration card", "SECC listing / PM-JAY family ID"],
+    "where_to_apply": "pmjay.gov.in or nearest empanelled hospital's Ayushman Mitra desk / Common Service Centre",
+    "estimated_annual_value": 15000,
+    "application_complexity": "easy",
+    "common_rejection_reasons": ["Family not in SECC-2011 list", "Aadhaar e-KYC mismatch"],
+    "source_url": "https://pmjay.gov.in"
+  },
+  {
+    "id": "pmuy",
+    "name": "प्रधानमंत्री उज्ज्वला योजना / PM Ujjwala Yojana 2.0",
+    "authority": "Ministry of Petroleum & Natural Gas",
+    "state": "central",
+    "benefit_amount": "Free LPG connection + first refill and stove; subsidy ₹300 per cylinder (up to 12/year)",
+    "eligibility": [
+      "Adult woman from a poor household without an existing LPG connection",
+      "Covered under SECC / BPL / Antyodaya / PMAY / AAY or a self-declaration of poverty"
+    ],
+    "documents_required": ["Aadhaar card", "Ration card", "Bank passbook", "Self-declaration form"],
+    "where_to_apply": "pmuy.gov.in or any LPG distributor (Indane/Bharat/HP)",
+    "estimated_annual_value": 3600,
+    "application_complexity": "easy",
+    "common_rejection_reasons": ["Existing LPG connection in family", "KYC documents incomplete"],
+    "source_url": "https://www.pmuy.gov.in"
+  },
+  {
+    "id": "pmvvy",
+    "name": "प्रधानमंत्री वय वंदना योजना / Pradhan Mantri Vaya Vandana Yojana (PMVVY)",
+    "authority": "LIC of India (Govt. of India backed)",
+    "state": "central",
+    "benefit_amount": "Assured pension ~7.4%/year on purchase price, up to ₹9,250/month",
+    "eligibility": [
+      "Age 60 or above",
+      "Requires a lump-sum purchase (₹1.5 lakh – ₹15 lakh)",
+      "Note: closed for new purchase after 31 Mar 2023 — existing policies continue; shown for awareness/servicing"
+    ],
+    "documents_required": ["Aadhaar card", "PAN card", "Bank passbook", "Age proof"],
+    "where_to_apply": "LIC branch or licindia.in",
+    "estimated_annual_value": 111000,
+    "application_complexity": "hard",
+    "common_rejection_reasons": ["Below 60 years", "Scheme window closed for fresh purchase"],
+    "source_url": "https://licindia.in"
+  },
+  {
+    "id": "eps95-widow",
+    "name": "ईपीएफओ विधवा पेंशन (ईपीएस-95) / EPFO Widow Pension under EPS-95",
+    "authority": "Employees' Provident Fund Organisation, Ministry of Labour",
+    "state": "central",
+    "benefit_amount": "Minimum ₹1,000/month (actual depends on husband's pensionable salary/service)",
+    "eligibility": [
+      "Husband was an EPF/EPS member (formal-sector employment)",
+      "Payable from date of death, regardless of husband's age or service length",
+      "Continues until remarriage; children's pension paid in addition"
+    ],
+    "documents_required": ["Form 10-D", "Death certificate", "Marriage proof / joint photo", "Aadhaar", "Bank passbook", "Husband's PF/UAN details"],
+    "where_to_apply": "EPFO regional office or unifiedportal-mem.epfindia.gov.in (via employer)",
+    "estimated_annual_value": 12000,
+    "application_complexity": "hard",
+    "common_rejection_reasons": ["UAN/KYC of deceased not seeded", "Employer attestation pending", "Name mismatch in records"],
+    "source_url": "https://www.epfindia.gov.in"
+  },
+  {
+    "id": "aaby",
+    "name": "आम आदमी बीमा योजना / LIC Aam Aadmi Bima Yojana (AABY) family benefit",
+    "authority": "LIC of India / Ministry of Finance",
+    "state": "central",
+    "benefit_amount": "₹30,000 natural death / ₹75,000 accidental death payout to nominee; scholarship for 2 children",
+    "eligibility": [
+      "Deceased was enrolled in AABY (rural landless household / notified occupation)",
+      "Nominee (widow) files death claim with certificate",
+      "Children in class 9–12 eligible for ₹100/month scholarship"
+    ],
+    "documents_required": ["Death certificate", "AABY policy/membership details", "Aadhaar of nominee", "Bank passbook"],
+    "where_to_apply": "LIC P&GS unit via the nodal agency that enrolled the member",
+    "estimated_annual_value": 30000,
+    "application_complexity": "medium",
+    "common_rejection_reasons": ["Husband not enrolled before death", "Claim filed without nodal agency attestation"],
+    "source_url": "https://licindia.in/aam-admi-bima-yojana"
+  },
+  {
+    "id": "pmjjby-claim",
+    "name": "प्रधानमंत्री जीवन ज्योति बीमा योजना दावा / PMJJBY Death Claim",
+    "authority": "Department of Financial Services, Ministry of Finance",
+    "state": "central",
+    "benefit_amount": "₹2,00,000 one-time payout to nominee",
+    "eligibility": [
+      "Husband held a bank account auto-debited ₹436/year for PMJJBY",
+      "Death from any cause is covered",
+      "Claim filed by nominee at the bank branch"
+    ],
+    "documents_required": ["Death certificate", "Claim form", "Nominee's Aadhaar", "Nominee's bank passbook", "Discharge receipt"],
+    "where_to_apply": "Bank branch where the deceased held the PMJJBY-linked account (jansuraksha.gov.in)",
+    "estimated_annual_value": 200000,
+    "application_complexity": "easy",
+    "common_rejection_reasons": ["Premium not debited (lapsed cover)", "Death within 30-day lien period", "Nominee not recorded"],
+    "source_url": "https://www.jansuraksha.gov.in"
+  },
+  {
+    "id": "ssy",
+    "name": "सुकन्या समृद्धि योजना / Sukanya Samriddhi Yojana (for daughters)",
+    "authority": "Ministry of Finance (National Savings Scheme)",
+    "state": "central",
+    "benefit_amount": "8.2%/year tax-free interest on deposits for a girl child (min ₹250/year)",
+    "eligibility": [
+      "Girl child below 10 years",
+      "Guardian (mother) opens the account",
+      "Max 2 accounts per family"
+    ],
+    "documents_required": ["Daughter's birth certificate", "Guardian's Aadhaar", "Guardian's PAN or Form 60"],
+    "where_to_apply": "Any post office or authorised bank branch (india.gov.in/sukanya-samriddhi-yojna)",
+    "estimated_annual_value": 2000,
+    "application_complexity": "easy",
+    "common_rejection_reasons": ["Daughter above 10 years", "Birth certificate missing"],
+    "source_url": "https://www.india.gov.in/spotlight/sukanya-samriddhi-yojna"
+  },
+  {
+    "id": "up-widow-pension",
+    "name": "उत्तर प्रदेश निराश्रित महिला पेंशन / UP Destitute Widow Pension",
+    "authority": "Department of Women & Child Development, Govt. of Uttar Pradesh",
+    "state": "Uttar Pradesh",
+    "benefit_amount": "₹1,000/month",
+    "eligibility": [
+      "Widow aged 18 or above, resident of UP",
+      "Annual family income up to ₹2,00,000",
+      "Not receiving any other government pension"
+    ],
+    "documents_required": ["Death certificate", "Aadhaar", "Income certificate", "Bank passbook", "Photo"],
+    "where_to_apply": "sspy-up.gov.in (Integrated Pension Portal, UP)",
+    "estimated_annual_value": 12000,
+    "application_complexity": "easy",
+    "common_rejection_reasons": ["Income certificate expired", "Already drawing old-age pension", "Aadhaar not seeded to bank account"],
+    "source_url": "https://sspy-up.gov.in"
+  },
+  {
+    "id": "bihar-lsspy",
+    "name": "लक्ष्मीबाई सामाजिक सुरक्षा पेंशन / Bihar Laxmibai Samajik Suraksha Pension",
+    "authority": "Social Welfare Department, Govt. of Bihar",
+    "state": "Bihar",
+    "benefit_amount": "₹400/month",
+    "eligibility": [
+      "Widow aged 18–39 (40+ moves to IGNWPS with state top-up), resident of Bihar",
+      "Annual family income below ₹60,000"
+    ],
+    "documents_required": ["Death certificate", "Aadhaar", "Income certificate", "Residence certificate", "Bank passbook"],
+    "where_to_apply": "serviceonline.bihar.gov.in (RTPS) or Block office",
+    "estimated_annual_value": 4800,
+    "application_complexity": "easy",
+    "common_rejection_reasons": ["Income above limit", "Residence certificate missing", "Duplicate application"],
+    "source_url": "https://serviceonline.bihar.gov.in"
+  },
+  {
+    "id": "mp-kalyani-pension",
+    "name": "मुख्यमंत्री कल्याणी पेंशन योजना / MP Mukhyamantri Kalyani Pension",
+    "authority": "Social Justice Department, Govt. of Madhya Pradesh",
+    "state": "Madhya Pradesh",
+    "benefit_amount": "₹600/month",
+    "eligibility": [
+      "Widow (kalyani) aged 18–79, resident of MP",
+      "Not an income-tax payee; not receiving another pension"
+    ],
+    "documents_required": ["Death certificate", "Aadhaar", "Samagra ID", "Bank passbook"],
+    "where_to_apply": "socialsecurity.mp.gov.in (Pension Portal MP)",
+    "estimated_annual_value": 7200,
+    "application_complexity": "easy",
+    "common_rejection_reasons": ["Samagra ID not linked", "Receiving another social security pension"],
+    "source_url": "https://socialsecurity.mp.gov.in"
+  },
+  {
+    "id": "raj-ekal-nari",
+    "name": "मुख्यमंत्री एकल नारी सम्मान पेंशन / Rajasthan Ekal Nari Samman Pension",
+    "authority": "Social Justice & Empowerment Department, Govt. of Rajasthan",
+    "state": "Rajasthan",
+    "benefit_amount": "₹1,150–₹1,500/month (slab by age)",
+    "eligibility": [
+      "Widow/divorced/abandoned woman aged 18+, resident of Rajasthan",
+      "Annual family income up to ₹48,000"
+    ],
+    "documents_required": ["Death certificate", "Jan Aadhaar", "Aadhaar", "Income declaration", "Bank passbook"],
+    "where_to_apply": "ssp.rajasthan.gov.in or nearest e-Mitra kiosk",
+    "estimated_annual_value": 13800,
+    "application_complexity": "easy",
+    "common_rejection_reasons": ["Jan Aadhaar mismatch", "Income declaration not verified"],
+    "source_url": "https://ssp.rajasthan.gov.in"
+  },
+  {
+    "id": "mh-sgnay",
+    "name": "संजय गांधी निराधार अनुदान योजना / Maharashtra Sanjay Gandhi Niradhar Anudan Yojana",
+    "authority": "Social Justice & Special Assistance Department, Govt. of Maharashtra",
+    "state": "Maharashtra",
+    "benefit_amount": "₹1,500/month (₹1,800 for families with more than one child)",
+    "eligibility": [
+      "Destitute widow below 65, resident of Maharashtra",
+      "Annual family income up to ₹21,000 (rural)"
+    ],
+    "documents_required": ["Death certificate", "Aadhaar", "Income certificate", "Residence proof", "Bank passbook"],
+    "where_to_apply": "aaplesarkar.mahaonline.gov.in or Tehsildar office",
+    "estimated_annual_value": 18000,
+    "application_complexity": "medium",
+    "common_rejection_reasons": ["Income above ceiling", "Tehsildar verification pending"],
+    "source_url": "https://aaplesarkar.mahaonline.gov.in"
+  },
+  {
+    "id": "central-family-pension",
+    "name": "केंद्रीय/राज्य कर्मचारी पारिवारिक पेंशन / Family Pension for Government Employees (CCS Pension Rules)",
+    "authority": "Department of Pension & Pensioners' Welfare (central) / State Finance Departments",
+    "state": "central",
+    "benefit_amount": "30% of husband's last drawn pay (enhanced 50% for first 7-10 years), minimum ₹9,000/month + Dearness Relief",
+    "eligibility": [
+      "Husband was a central or state government employee or pensioner",
+      "Payable to widow from the day after death, until remarriage",
+      "Applies whether he died in service or after retirement"
+    ],
+    "documents_required": ["Form 14", "Death certificate", "PPO / service book details", "Marriage proof", "Bank passbook", "Aadhaar"],
+    "where_to_apply": "Husband's department office / pension-disbursing bank; status on bhavishya.nic.in for central employees",
+    "estimated_annual_value": 108000,
+    "application_complexity": "medium",
+    "common_rejection_reasons": ["Family details not in service book", "Joint bank account not opened", "Form 14 attestation pending"],
+    "source_url": "https://pensionersportal.gov.in"
+  },
+  {
+    "id": "compassionate-appointment",
+    "name": "अनुकंपा नियुक्ति / Compassionate Appointment (Government Job for Family of Deceased Employee)",
+    "authority": "Department of Personnel & Training (central) / State GAD rules",
+    "state": "central",
+    "benefit_amount": "Government job (Group C/D post) offered to widow or one dependent child",
+    "eligibility": [
+      "Husband was a government employee who died in harness (while in service)",
+      "Family is in immediate financial distress",
+      "Application within the prescribed time limit (varies; typically within 5 years)",
+      "Subject to 5% ceiling of vacancies in the department"
+    ],
+    "documents_required": ["Death certificate", "Service certificate of deceased", "Family income affidavit", "Educational certificates of applicant", "Dependency certificate"],
+    "where_to_apply": "Head of the department where the husband served (DoPT guidelines: dopt.gov.in)",
+    "estimated_annual_value": 240000,
+    "application_complexity": "hard",
+    "common_rejection_reasons": ["Applied after time limit", "Vacancy ceiling exhausted", "Family income above distress threshold", "Death after retirement (not in harness)"],
+    "source_url": "https://dopt.gov.in"
+  },
+  {
+    "id": "ap-ntr-bharosa",
+    "name": "ఎన్టీఆర్ భరోసా వితంతు పింఛను / Andhra Pradesh NTR Bharosa Widow Pension",
+    "authority": "Society for Elimination of Rural Poverty (SERP), Govt. of Andhra Pradesh",
+    "state": "Andhra Pradesh",
+    "benefit_amount": "₹4,000/month, delivered via Village/Ward Secretariat",
+    "eligibility": [
+      "Widow aged 18 or above, resident of Andhra Pradesh",
+      "Monthly family income up to ₹10,000 (rural) / ₹12,000 (urban)",
+      "Not receiving another government pension"
+    ],
+    "documents_required": ["Death certificate of husband", "Aadhaar card", "White ration card (rice card)", "Income certificate", "Caste certificate", "Passport-size photographs", "Aadhaar-linked bank account details"],
+    "where_to_apply": "Village/Ward Secretariat (free of cost) or sspensions.ap.gov.in",
+    "estimated_annual_value": 48000,
+    "application_complexity": "easy",
+    "common_rejection_reasons": ["Income above ceiling", "Already drawing another pension", "Secretariat verification pending"],
+    "source_url": "https://sspensions.ap.gov.in"
+  },
+  {
+    "id": "ts-rythu-bima",
+    "name": "రైతు బీమా / Telangana Rythu Bima (Farmers' Group Life Insurance)",
+    "authority": "Agriculture Department, Govt. of Telangana (with LIC)",
+    "state": "Telangana",
+    "benefit_amount": "₹5,00,000 one-time payout to nominee within ~10 days of farmer's death",
+    "eligibility": [
+      "Deceased husband was a land-owning farmer aged 18–59 enrolled in Rythu Bima",
+      "Death from any cause is covered",
+      "Nominee (usually wife) receives payout directly to bank account"
+    ],
+    "documents_required": ["Death certificate", "Pattadar passbook of deceased", "Nominee's Aadhaar", "Nominee's bank passbook"],
+    "where_to_apply": "Village Agriculture Extension Officer (AEO) / rythubandhu.telangana.gov.in",
+    "estimated_annual_value": 500000,
+    "application_complexity": "easy",
+    "common_rejection_reasons": ["Farmer not enrolled before death", "Land not in deceased's name", "Age outside 18–59 band"],
+    "source_url": "https://rythubandhu.telangana.gov.in"
+  },
+  {
+    "id": "bocw-death-benefit",
+    "name": "निर्माण श्रमिक मृत्यु लाभ / Construction Workers' Death Benefit & Family Pension (BOCW Welfare Boards)",
+    "authority": "State Building & Other Construction Workers Welfare Boards (under central BOCW Act 1996)",
+    "state": "central",
+    "benefit_amount": "₹1–5 lakh ex-gratia on death (varies by state) + funeral assistance + family pension in several states",
+    "eligibility": [
+      "Deceased husband was a registered construction worker (laborer) with the state BOCW board",
+      "Registration/membership active at the time of death",
+      "Widow or nominee applies to the same board"
+    ],
+    "documents_required": ["Death certificate", "BOCW registration card of deceased", "Nominee's Aadhaar", "Bank passbook"],
+    "where_to_apply": "State BOCW Welfare Board / labour department office or state labour portal (e.g. upbocw.in, tbocwwb.telangana.gov.in)",
+    "estimated_annual_value": 200000,
+    "application_complexity": "medium",
+    "common_rejection_reasons": ["Worker not registered with the board", "Membership lapsed (annual fee unpaid)", "Claim filed outside the state of registration"],
+    "source_url": "https://labour.gov.in"
+  },
+  {
+    "id": "ka-vidhava-vetana",
+    "name": "विधवा वेतन / Karnataka Vidhava Vetana (Widow Pension)",
+    "authority": "Directorate of Social Security & Pensions, Govt. of Karnataka",
+    "state": "Karnataka",
+    "benefit_amount": "₹800/month",
+    "eligibility": [
+      "Widow aged 18+, resident of Karnataka",
+      "Annual family income below ₹32,000"
+    ],
+    "documents_required": ["Death certificate", "Aadhaar", "Income certificate", "Bank passbook"],
+    "where_to_apply": "sevasindhu.karnataka.gov.in or Nadakacheri (Atalji Janasnehi Kendra)",
+    "estimated_annual_value": 9600,
+    "application_complexity": "easy",
+    "common_rejection_reasons": ["Income certificate expired", "Aadhaar-bank seeding missing"],
+    "source_url": "https://sevasindhu.karnataka.gov.in"
+  }
+]
