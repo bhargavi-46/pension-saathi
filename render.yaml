@@ -1,33 +1,40 @@
 services:
   - type: web
     name: pension-saathi-api
-    runtime: python
-    rootDir: backend
-    # On Render free tier, system packages can't be installed due to sandbox limits.
-    # Tesseract is optional — if unavailable, OCR gracefully falls back to LLM vision.
-    # For production: upgrade to Standard tier or use Docker.
-    buildCommand: pip install -r requirements.txt
+    runtime: docker
+    dockerfilePath: ./Dockerfile
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
     plan: free
     envVars:
+      # Gemini (primary AI reasoning)
       - key: GOOGLE_API_KEY
         sync: false
-      # Server-side voice (WhatsApp channel). Sarvam is default for STT + TTS.
+      # Groq fallback (when Gemini free tier rate limit hit)
+      - key: GROQ_API_KEY
+        sync: false
+      # Allow mock fallback if both APIs unavailable
+      - key: ALLOW_MOCK_FALLBACK
+        value: "0"
+      # Server-side voice (WhatsApp channel). Sarvam is default.
       - key: SARVAM_API_KEY
         sync: false
-      # Dedicated web search — Gemini grounding is NOT used for this.
+      - key: STT_PROVIDER
+        value: sarvam
+      - key: TTS_PROVIDER
+        value: sarvam
+      # Dedicated web search — NOT via Gemini grounding
       - key: TAVILY_API_KEY
         sync: false
-      # AES-GCM key for encrypting OCR-extracted document text at rest.
-      # Generate: python -c "import secrets,base64;print(base64.b64encode(secrets.token_bytes(32)).decode())"
+      # AES-GCM encryption for OCR-extracted document text at rest
       - key: OCR_ENCRYPTION_KEY
         sync: false
-      # WhatsApp channel (leave blank if not using — falls back to web /chat).
+      # Tesseract OCR (optional — installed via Docker)
+      - key: TESSERACT_CMD
+        value: /usr/bin/tesseract
+      # WhatsApp Business API channel
       - key: WHATSAPP_TOKEN
         sync: false
       - key: WHATSAPP_PHONE_NUMBER_ID
         sync: false
       - key: WHATSAPP_VERIFY_TOKEN
         sync: false
-      - key: PYTHON_VERSION
-        value: 3.11.9
