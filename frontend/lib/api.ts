@@ -1,7 +1,8 @@
 /** Typed fetch wrappers for the Pension Saathi backend. */
 
-export const API_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+export const API_URL = (
+  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000"
+).replace(/\/+$/, "");
 
 /** Schemes whose "received" status means a service/benefit was ACTIVATED
  *  (e.g. the Ayushman golden card), not cash credited via DBT — these count
